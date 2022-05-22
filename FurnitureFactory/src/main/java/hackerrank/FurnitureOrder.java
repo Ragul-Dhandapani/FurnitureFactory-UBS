@@ -1,45 +1,51 @@
 package hackerrank;
 
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FurnitureOrder implements FurnitureOrderInterface {
-    /**
-     * TODO: Create a map of Furniture items to order quantities
-     */
+    private final HashMap<Furniture,Integer> furnitureIntegerHashMap;
 
     /**
      * Initialize a new mapping of Furniture types to order quantities.
      */
     FurnitureOrder() {
-        // TODO: Complete the constructor
+        furnitureIntegerHashMap = new HashMap<>();
     }
 
     public void addToOrder(final Furniture type, final int furnitureCount) {
-        // TODO: Complete the method
+        Integer typeCount = 0;
+        if(furnitureIntegerHashMap.containsKey(type)) {
+            typeCount = furnitureIntegerHashMap.get(type);
+        }
+        furnitureIntegerHashMap.put(type, typeCount + furnitureCount);
     }
 
     public HashMap<Furniture, Integer> getOrderedFurniture() {
-        // TODO: Complete the method
-        return null;
+        return new HashMap<>(furnitureIntegerHashMap);
     }
 
     public float getTotalOrderCost() {
-        // TODO: Complete the method
-        return -1.0f;
+        AtomicInteger totalCost = new AtomicInteger();
+        furnitureIntegerHashMap.entrySet().stream().forEach(furnitureData ->
+                totalCost.addAndGet(Math.round(furnitureData.getValue() * furnitureData.getKey().cost())));
+        return totalCost.get();
     }
 
     public int getTypeCount(Furniture type) {
-        // TODO: Complete the method
-        return -1;
+        return furnitureIntegerHashMap.getOrDefault(type , 0);
     }
 
     public float getTypeCost(Furniture type) {
-        // TODO: Complete the method
-        return -1.0f;
+        return (type.cost() * (furnitureIntegerHashMap.containsKey(type) ? furnitureIntegerHashMap.get(type) : 0.0f));
     }
 
     public int getTotalOrderQuantity() {
-        // TODO: Complete the method
-        return -1;
+        if(!furnitureIntegerHashMap.isEmpty()) {
+            return furnitureIntegerHashMap.values().stream()
+                    .reduce(Integer::sum)
+                    .get();
+        }else
+            return 0;
     }
 }
